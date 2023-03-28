@@ -38,7 +38,7 @@ func New() *Service {
 	return &Service{
 		// TODO: make them configurable via flag
 		rangeOfMinMaxReplicasRecommendation:   1 * time.Hour,
-		TTLHourOfMinMaxReplicasRecommendation: 24 * 7, // 1 week
+		TTLHourOfMinMaxReplicasRecommendation: 24 * 7 * 4, // 1 month
 		maxReplicasFactor:                     2,
 		minReplicasFactor:                     0.5,
 		upperTargetResourceUtilization:        90,
@@ -187,20 +187,19 @@ func (s *Service) updateMaxMinReplicasRecommendation(value int32, recommendation
 	// find the corresponding recommendations.
 	index := -1
 	for i, r := range recommendations {
-		if now.Compare(r.From.Time) >= 0 && now.Compare(r.To.Time) < 0 {
+		if now.Hour() < r.To && now.Hour() >= r.From && now.Weekday() == r.WeekDay {
 			index = i
 			break
 		}
 	}
 	if index == -1 {
-		// TODO: where to initialize recommendation slots?
 		return nil, errors.New("no recommendation slot")
+	}
+	if value <= minimum {
+		value = minimum
 	}
 	if now.Sub(recommendations[index].UpdatedAt.Time).Hours() < s.TTLHourOfMinMaxReplicasRecommendation && value < recommendations[index].Value {
 		return recommendations, nil
-	}
-	if value < minimum {
-		value = minimum
 	}
 
 	recommendations[index].UpdatedAt = metav1.NewTime(now)

@@ -17,8 +17,8 @@ type Client struct {
 	c client.Client
 }
 
-func New(c client.Client) Client {
-	return Client{c: c}
+func New(c client.Client) *Client {
+	return &Client{c: c}
 }
 
 const TortoiseMonitorVPANamePrefix = "tortoise-monitor-"

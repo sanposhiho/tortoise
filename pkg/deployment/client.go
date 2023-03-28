@@ -16,8 +16,8 @@ type Client struct {
 	c client.Client
 }
 
-func New(c client.Client) Client {
-	return Client{c: c}
+func New(c client.Client) *Client {
+	return &Client{c: c}
 }
 
 func (c *Client) GetDeploymentOnTortoise(ctx context.Context, tortoise *autoscalingv1alpha1.Tortoise) (*v1.Deployment, error) {

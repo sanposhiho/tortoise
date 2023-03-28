@@ -22,8 +22,8 @@ type Client struct {
 	c client.Client
 }
 
-func New(c client.Client) Client {
-	return Client{c: c}
+func New(c client.Client) *Client {
+	return &Client{c: c}
 }
 
 const TortoiseHPANamePrefix = "tortoise-hpa-"
@@ -76,7 +76,7 @@ func (c *Client) UpdateHPAFromTortoiseRecommendation(ctx context.Context, tortoi
 // getReplicasRecommendation finds the corresponding recommendations.
 func getReplicasRecommendation(recommendations []autoscalingv1alpha1.ReplicasRecommendation, now time.Time) (int32, error) {
 	for _, r := range recommendations {
-		if now.Compare(r.From.Time) >= 0 && now.Compare(r.To.Time) < 0 {
+		if now.Hour() < r.To && now.Hour() >= r.From && now.Weekday() == r.WeekDay {
 			return r.Value, nil
 		}
 	}

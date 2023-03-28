@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"time"
+
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -133,17 +135,20 @@ type HorizontalRecommendations struct {
 }
 
 type ReplicasRecommendation struct {
-	From metav1.Time `json:"from" protobuf:"bytes,1,name=from"`
-	To   metav1.Time `json:"to" protobuf:"bytes,2,name=to"`
+	// From represented in hour.
+	From int `json:"from" protobuf:"variant,1,name=from"`
+	// To represented in hour.
+	To       int          `json:"to" protobuf:"variant,2,name=to"`
+	WeekDay  time.Weekday `json:"weekDay" protobuf:"bytes,3,name=weekDay"`
+	TimeZone string       `json:"timeZone" protobuf:"bytes,4,name=timeZone"`
 	// Value is the recommendation value.
-	Value     int32       `json:"value" protobuf:"varint,3,name=value"`
-	UpdatedAt metav1.Time `json:"updatedAt" protobuf:"bytes,4,name=updatedAt"`
+	Value     int32       `json:"value" protobuf:"variant,5,name=value"`
+	UpdatedAt metav1.Time `json:"updatedAt" protobuf:"bytes,6,name=updatedAt"`
 }
 
 type TortoisePhase string
 
 const (
-	TortoisePhaseUnknown TortoisePhase = "Unknown"
 	// TortoisePhaseGatheringData means tortoise is now gathering data and cannot make the accurate recommendations.
 	TortoisePhaseGatheringData TortoisePhase = "GatheringData"
 	// TortoisePhaseWorking means tortoise is making the recommendations.
@@ -165,8 +170,6 @@ type ContainerRecommendationFromVPA struct {
 	// ContainerName is the name of target container.
 	ContainerName string `json:"containerName" protobuf:"bytes,1,name=containerName"`
 	// MaxRecommendation is the max recommendation value from VPA among certain period (1 week).
-	// TODO: make the period configurable.
-	//
 	// Tortoise generates all recommendation based on this MaxRecommendation.
 	MaxRecommendation map[v1.ResourceName]ResourceQuantity `json:"maxRecommendation" protobuf:"bytes,2,name=maxRecommendation"`
 	// Recommendation is the latest recommendation value from VPA.
@@ -174,8 +177,8 @@ type ContainerRecommendationFromVPA struct {
 }
 
 type ResourceQuantity struct {
-	Quantity  resource.Quantity
-	UpdatedAt metav1.Time
+	Quantity  resource.Quantity `json:"quantity" protobuf:"bytes,1,name=quantity"`
+	UpdatedAt metav1.Time       `json:"updatedAt" protobuf:"bytes,2,name=updatedAt"`
 }
 
 //+kubebuilder:object:root=true
