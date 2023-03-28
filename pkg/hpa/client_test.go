@@ -44,7 +44,7 @@ func TestClient_UpdateHPAFromTortoiseRecommendation(t *testing.T) {
 				tortoise: &autoscalingv1alpha1.Tortoise{
 					Status: autoscalingv1alpha1.TortoiseStatus{
 						Recommendations: autoscalingv1alpha1.Recommendations{
-							HPA: autoscalingv1alpha1.HPARecommendations{
+							Horizontal: autoscalingv1alpha1.HorizontalRecommendations{
 								TargetUtilizations: []autoscalingv1alpha1.HPATargetUtilizationRecommendationPerContainer{
 									{
 										ContainerName: "app",
@@ -170,7 +170,7 @@ func TestClient_UpdateHPAFromTortoiseRecommendation(t *testing.T) {
 				tortoise: &autoscalingv1alpha1.Tortoise{
 					Status: autoscalingv1alpha1.TortoiseStatus{
 						Recommendations: autoscalingv1alpha1.Recommendations{
-							HPA: autoscalingv1alpha1.HPARecommendations{
+							Horizontal: autoscalingv1alpha1.HorizontalRecommendations{
 								TargetUtilizations: []autoscalingv1alpha1.HPATargetUtilizationRecommendationPerContainer{
 									{
 										ContainerName: "app",

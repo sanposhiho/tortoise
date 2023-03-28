@@ -67,8 +67,8 @@ func (s *Service) updateVPARecommendation(tortoise *v1alpha1.Tortoise, deploymen
 	newRecommendations := []v1alpha1.RecommendedContainerResources{}
 	for _, r := range tortoise.Spec.ResourcePolicy {
 		recommendation := v1alpha1.RecommendedContainerResources{
-			ContainerName: r.ContainerName,
-			Resource:      map[corev1.ResourceName]resource.Quantity{},
+			ContainerName:       r.ContainerName,
+			RecommendedResource: map[corev1.ResourceName]resource.Quantity{},
 		}
 		for k, p := range r.AutoscalingPolicy {
 			reqmap, ok := requestMap[r.ContainerName]
@@ -102,12 +102,12 @@ func (s *Service) updateVPARecommendation(tortoise *v1alpha1.Tortoise, deploymen
 
 			newSize = s.justifyNewSizeByMaxMin(newSize, k, req, r.MinAllowedResources)
 			q := resource.NewMilliQuantity(newSize, req.Format)
-			recommendation.Resource[k] = *q
+			recommendation.RecommendedResource[k] = *q
 		}
 		newRecommendations = append(newRecommendations, recommendation)
 	}
 
-	tortoise.Status.Recommendations.VPA.ContainerResourceRecommendation = newRecommendations
+	tortoise.Status.Recommendations.Vertical.ContainerResourceRecommendation = newRecommendations
 
 	return tortoise, nil
 }
@@ -168,16 +168,16 @@ func (s *Service) UpdateRecommendations(tortoise *v1alpha1.Tortoise, hpa *v2.Hor
 
 func (s *Service) updateHPAMinMaxReplicasRecommendations(tortoise *v1alpha1.Tortoise, deployment *v1.Deployment, now time.Time) (*v1alpha1.Tortoise, error) {
 	currentReplicaNum := float64(deployment.Status.Replicas)
-	min, err := s.updateMaxMinReplicasRecommendation(int32(math.Ceil(currentReplicaNum*s.minReplicasFactor)), tortoise.Status.Recommendations.HPA.MinReplicas, now, s.minimumMinReplicas)
+	min, err := s.updateMaxMinReplicasRecommendation(int32(math.Ceil(currentReplicaNum*s.minReplicasFactor)), tortoise.Status.Recommendations.Horizontal.MinReplicas, now, s.minimumMinReplicas)
 	if err != nil {
 		return tortoise, fmt.Errorf("update MinReplicas recommendation: %w", err)
 	}
-	tortoise.Status.Recommendations.HPA.MinReplicas = min
-	max, err := s.updateMaxMinReplicasRecommendation(int32(math.Ceil(currentReplicaNum*s.maxReplicasFactor)), tortoise.Status.Recommendations.HPA.MaxReplicas, now, 0)
+	tortoise.Status.Recommendations.Horizontal.MinReplicas = min
+	max, err := s.updateMaxMinReplicasRecommendation(int32(math.Ceil(currentReplicaNum*s.maxReplicasFactor)), tortoise.Status.Recommendations.Horizontal.MaxReplicas, now, 0)
 	if err != nil {
 		return tortoise, fmt.Errorf("update MaxReplicas recommendation: %w", err)
 	}
-	tortoise.Status.Recommendations.HPA.MaxReplicas = max
+	tortoise.Status.Recommendations.Horizontal.MaxReplicas = max
 
 	return tortoise, nil
 }
@@ -267,7 +267,7 @@ func (s *Service) updateHPATargetUtilizationRecommendations(tortoise *v1alpha1.T
 		})
 	}
 
-	tortoise.Status.Recommendations.HPA.TargetUtilizations = newHPATargetUtilizationRecommendationPerContainer
+	tortoise.Status.Recommendations.Horizontal.TargetUtilizations = newHPATargetUtilizationRecommendationPerContainer
 
 	return tortoise, nil
 }
