@@ -24,13 +24,11 @@ TODO: add how to install on the cluster.
 
 Tortoise, you don't need a rearing cage, but need VPA in your Kubernetes cluster before installing it.
 
-## How it works
+## Documentations 
 
-TODO: add the strategies.
+- [Concept](./docs/concept.md): describes a brief overview of tortoise.
+- coming soon
 
 ## Note
 
-It's implemented based on our experience for the workloads in Mercari.
-Depending on how your workloads look like, tortoise may or may not fit your workloads.
-
-Also, probably, this repository will be moved to @mercari organization in the future.
+Probably this repository will be moved to @mercari organization in the future.
