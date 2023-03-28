@@ -40,7 +40,8 @@ type TortoiseSpec struct {
 type ContainerResourcePolicy struct {
 	ContainerName       string
 	MinAllowedResources v1.ResourceList
-	AutoscalingPolicy   map[v1.ResourceName]AutoscalingType
+	// TODO: Now, at least one container in Pod should be Horizontal
+	AutoscalingPolicy map[v1.ResourceName]AutoscalingType
 }
 
 // +kubebuilder:validation:Enum=Off;Auto
@@ -48,6 +49,7 @@ type UpdateMode string
 
 const (
 	OffUpdateMode  UpdateMode = "Off"
+	EmergencyMode  UpdateMode = "Emergency"
 	AutoUpdateMode UpdateMode = "Auto"
 )
 

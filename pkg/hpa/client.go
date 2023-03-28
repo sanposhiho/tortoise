@@ -54,17 +54,21 @@ func (c *Client) UpdateHPAFromTortoiseRecommendation(ctx context.Context, tortoi
 		}
 	}
 
-	min, err := getReplicasRecommendation(tortoise.Status.Recommendations.HPA.MinReplicas, now)
-	if err != nil {
-		return nil, fmt.Errorf("get minReplicas recommendation: %w", err)
-	}
-	hpa.Spec.MinReplicas = &min
-
 	max, err := getReplicasRecommendation(tortoise.Status.Recommendations.HPA.MaxReplicas, now)
 	if err != nil {
 		return nil, fmt.Errorf("get maxReplicas recommendation: %w", err)
 	}
 	hpa.Spec.MaxReplicas = max
+
+	// when emergency mode, we set the same value on minReplicas.
+	min := max
+	if tortoise.Spec.UpdateMode != autoscalingv1alpha1.EmergencyMode {
+		min, err = getReplicasRecommendation(tortoise.Status.Recommendations.HPA.MinReplicas, now)
+		if err != nil {
+			return nil, fmt.Errorf("get minReplicas recommendation: %w", err)
+		}
+	}
+	hpa.Spec.MinReplicas = &min
 
 	return hpa, c.c.Update(ctx, hpa)
 }
