@@ -79,7 +79,7 @@ spec:
       - containerName: “istio-proxy”
       # …
       - containerName: 'echo-app'
-        minAllowedResources:  // PPA won’t give the resource request less than these values to container.
+        MinAllocatedResources:  // PPA won’t give the resource request less than these values to container.
           memory: 1Gi
           cpu: 2
         strategy:
@@ -186,7 +186,7 @@ We can change the resource request on each container to:
 
 If the service is small, it may reach `minReplicas` at off-peak time.
 In such cases, we need to reduce the resource request. Use VPA recommended value to reduce the Pod size during such off-peak time.
-Once the number of Pods almost always goes above 3 or the resource request cannot reduce more due to the minAllowedResources limitation, then finish the size optimization.
+Once the number of Pods almost always goes above 3 or the resource request cannot reduce more due to the MinAllocatedResources limitation, then finish the size optimization.
 
 #### How to modify the resource request
 
@@ -199,7 +199,7 @@ Then, we don’t need to implement something similar to VPA to update the Pod re
 
 ### Vertical
 
-When vertical is specified, PPA updates the corresponding VPA’s .spec.ResourcePolicy.ContainerPolicies[*].MinAllowed to be the same as PPA’s minAllowedResources.
+When vertical is specified, PPA updates the corresponding VPA’s .spec.ResourcePolicy.ContainerPolicies[*].MinAllowed to be the same as PPA’s MinAllocatedResources.
 Basically, that’s it. Almost all stuff should be done by VPA itself.
 
 #### The replica number adjustment

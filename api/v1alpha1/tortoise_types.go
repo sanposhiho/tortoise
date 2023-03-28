@@ -53,16 +53,16 @@ type TortoiseSpec struct {
 type ContainerResourcePolicy struct {
 	// ContainerName is the name of target container.
 	ContainerName string `json:"containerName" protobuf:"bytes,1,name=containerName"`
-	// MinAllowedResources is the minimum amount of resources which is given to the container.
-	// Tortoise never set the resources request on the container than MinAllowedResources.
+	// MinAllocatedResources is the minimum amount of resources which is given to the container.
+	// Tortoise never set the resources request on the container than MinAllocatedResources.
 	//
 	// If empty, tortoise may reduce the resource request to the value which is suggested from VPA.
-	// Leaving this field empty is basically safe, but you may consider using MinAllowedResources when maybe your application will consume resources more than usual,
+	// Leaving this field empty is basically safe, but you may consider using MinAllocatedResources when maybe your application will consume resources more than usual,
 	// given the VPA suggests values based on the historical resource usage.
 	// For example, your application will soon have new feature which leads to increase in the resource usage,
 	// it is expected that your application will soon get more requests than usual, etc.
 	// +optional
-	MinAllowedResources v1.ResourceList `json:"minAllowedResources" protobuf:"bytes,2,name=minAllowedResources"`
+	MinAllocatedResources v1.ResourceList `json:"MinAllocatedResources" protobuf:"bytes,2,name=MinAllocatedResources"`
 	// AutoscalingPolicy specifies how each resource is scaled.
 	// If "Horizontal", the resource is horizontally scaled.
 	// If "Vertical", the resource is vertically scaled.
@@ -153,6 +153,10 @@ const (
 	TortoisePhaseGatheringData TortoisePhase = "GatheringData"
 	// TortoisePhaseWorking means tortoise is making the recommendations.
 	TortoisePhaseWorking TortoisePhase = "Working"
+	// TortoiseBackToNormal means tortoise was in the emergency mode, and now it's coming back to the normal operation.
+	// During TortoiseBackToNormal, the number of replicas of workloads are gradually reduced to the usual value.
+	// TODO: implement this.
+	TortoiseBackToNormal TortoisePhase = "Working"
 )
 
 type HPATargetUtilizationRecommendationPerContainer struct {

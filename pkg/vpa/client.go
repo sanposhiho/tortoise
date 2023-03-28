@@ -62,7 +62,7 @@ func (c *Client) CreateTortoiseUpdaterVPA(ctx context.Context, tortoise *autosca
 	for _, c := range tortoise.Spec.ResourcePolicy {
 		crp = append(crp, v1.ContainerResourcePolicy{
 			ContainerName: c.ContainerName,
-			MinAllowed:    c.MinAllowedResources,
+			MinAllowed:    c.MinAllocatedResources,
 		})
 	}
 	vpa.Spec.ResourcePolicy.ContainerPolicies = crp
@@ -94,7 +94,7 @@ func (c *Client) CreateTortoiseMonitorVPA(ctx context.Context, tortoise *autosca
 	for _, c := range tortoise.Spec.ResourcePolicy {
 		crp = append(crp, v1.ContainerResourcePolicy{
 			ContainerName: c.ContainerName,
-			MinAllowed:    c.MinAllowedResources,
+			MinAllowed:    c.MinAllocatedResources,
 		})
 	}
 	vpa.Spec.ResourcePolicy.ContainerPolicies = crp

@@ -100,7 +100,7 @@ func (s *Service) updateVPARecommendation(tortoise *v1alpha1.Tortoise, deploymen
 				newSize = int64(float64(req.MilliValue()) * 1.1)
 			}
 
-			newSize = s.justifyNewSizeByMaxMin(newSize, k, req, r.MinAllowedResources)
+			newSize = s.justifyNewSizeByMaxMin(newSize, k, req, r.MinAllocatedResources)
 			q := resource.NewMilliQuantity(newSize, req.Format)
 			recommendation.RecommendedResource[k] = *q
 		}
@@ -112,9 +112,9 @@ func (s *Service) updateVPARecommendation(tortoise *v1alpha1.Tortoise, deploymen
 	return tortoise, nil
 }
 
-func (s *Service) justifyNewSizeByMaxMin(newSize int64, k corev1.ResourceName, req resource.Quantity, minAllowedResources corev1.ResourceList) int64 {
+func (s *Service) justifyNewSizeByMaxMin(newSize int64, k corev1.ResourceName, req resource.Quantity, MinAllocatedResources corev1.ResourceList) int64 {
 	max := s.suggestedResourceSizeAtMax[k]
-	min := minAllowedResources[k]
+	min := MinAllocatedResources[k]
 
 	if req.MilliValue() > max.MilliValue() {
 		return req.MilliValue()
@@ -326,6 +326,8 @@ func getHPATargetValue(hpa *v2.HorizontalPodAutoscaler, containerName string, k 
 }
 
 func updateRecommendedContainerBasedMetric(currentResourceReq resource.Quantity, currentTarget int32, recommendationFromVPA resource.Quantity) int32 {
+	// TODO: what happens if the resource request get changed?
+	// Should we change the phase to GatheringData
 	upperUsage := math.Ceil((float64(recommendationFromVPA.MilliValue()) / float64(currentResourceReq.MilliValue())) * 100)
 	additionalResource := int32(upperUsage) - currentTarget
 	return 100 - additionalResource
