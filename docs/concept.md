@@ -16,9 +16,10 @@ Tortoise, it aims to do such complicated configuration by system
 
 We only allow users to configure:
 - The way to do autoscaling (vertical or horizontal) for each container.
+  - In most cases, it should be OK to leave this configuration empty. Tortoise will use Horizontal for CPU and Vertical for Memory. 
 - The minimum amount of resources given to each container. (optional)
-    - In most cases, it should be OK to leave this configuration empty. Tortoise will take care of the resource request completely based on the values suggested by VPA.
-    - But, the application developers may want to increase the resource request before they bring something big to workloads which will affect the resource usage very much.
+  - In most cases, it should be OK to leave this configuration empty. Tortoise will take care of the resource request completely based on the values suggested by VPA.
+  - But, the application developers may want to increase the resource request before they bring something big to workloads which will affect the resource usage very much.
 
 But, for the cluster admin, we allow some global configurations 
 so that the cluster admin can make Tortoises fit their workloads characteristic.
