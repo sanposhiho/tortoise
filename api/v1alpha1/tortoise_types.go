@@ -93,15 +93,40 @@ type TargetRefs struct {
 	DeploymentName string `json:"deploymentName" protobuf:"bytes,1,name=deploymentName"`
 	// HorizontalPodAutoscalerName is the name of the target HPA.
 	// The target of this HPA should be the same as the DeploymentName above.
-	HorizontalPodAutoscalerName string `json:"horizontalPodAutoscalerName" protobuf:"bytes,2,name=horizontalPodAutoscalerName"`
+	// The target HPA should have the ContainerResource type metric or the external metric refers to the container resource utilization.
+	// Please check out the document for more detail: https://github.com/sanposhiho/tortoise/blob/master/docs/horizontal.md#supported-metrics-in-hpa
+	//
+	// If nothing specified, the Tortoise will create the HPA named "{Tortoise name} + -hpa" with needed ContainerResource type metric.
+	// +optional
+	HorizontalPodAutoscalerName *string `json:"horizontalPodAutoscalerName,omitempty" protobuf:"bytes,2,opt,name=horizontalPodAutoscalerName"`
 }
 
 // TortoiseStatus defines the observed state of Tortoise
 type TortoiseStatus struct {
 	TortoisePhase   TortoisePhase   `json:"tortoisePhase" protobuf:"bytes,1,name=tortoisePhase"`
-	Conditions      Conditions      `json:"conditions" protobuf:"bytes,2,name=Conditions"`
+	Conditions      Conditions      `json:"conditions" protobuf:"bytes,2,name=conditions"`
 	Recommendations Recommendations `json:"recommendations" protobuf:"bytes,3,name=recommendations"`
+	Targets         TargetsStatus   `json:"targets" protobuf:"bytes,4,name=targets"`
 }
+
+type TargetsStatus struct {
+	HorizontalPodAutoscaler string                              `json:"horizontalPodAutoscaler" protobuf:"bytes,1,name=horizontalPodAutoscaler"`
+	Deployment              string                              `json:"deployment" protobuf:"bytes,2,name=deployment"`
+	VerticalPodAutoscalers  []TargetStatusVerticalPodAutoscaler `json:"verticalPodAutoscalers" protobuf:"bytes,3,name=verticalPodAutoscalers"`
+}
+
+type TargetStatusVerticalPodAutoscaler struct {
+	Name string                    `json:"name" protobuf:"bytes,1,name=name"`
+	Role VerticalPodAutoscalerRole `json:"role" protobuf:"bytes,2,name=role"`
+}
+
+// +kubebuilder:validation:Enum=Updater;Monitor
+type VerticalPodAutoscalerRole string
+
+const (
+	VerticalPodAutoscalerRoleUpdater = "Updater"
+	VerticalPodAutoscalerRoleMonitor = "Monitor"
+)
 
 type Recommendations struct {
 	Horizontal HorizontalRecommendations `json:"horizontal" protobuf:"bytes,1,name=horizontal"`
